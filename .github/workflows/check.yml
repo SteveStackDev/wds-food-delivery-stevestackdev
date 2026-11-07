@@ -8,33 +8,53 @@ jobs:
   check:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - uses: pnpm/action-setup@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
         with:
           version: 10
-      - uses: actions/setup-node@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: pnpm
           cache-dependency-path: "**/pnpm-lock.yaml"
-      - run: pnpm -C apps/web install --frozen-lockfile
-      - run: node scripts/check-repo.mjs --build
+
+      - name: Install dependencies
+        run: pnpm -C apps/web install --frozen-lockfile
+
+      - name: Run repo check
+        run: node scripts/check-repo.mjs --build
 
   lighthouse:
     runs-on: ubuntu-latest
     needs: check
     steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
         with:
           version: 10
-      - uses: actions/setup-node@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: pnpm
           cache-dependency-path: "**/pnpm-lock.yaml"
-      - run: pnpm -C apps/web install --frozen-lockfile
-      - run: pnpm -C apps/web build
-      - run: pnpm dlx @lhci/cli@0.14.0 autorun --config=./lighthouserc.json
+
+      - name: Install dependencies
+        run: pnpm -C apps/web install --frozen-lockfile
+
+      - name: Build web app
+        run: pnpm -C apps/web build
+
+      - name: Run Lighthouse CI
+        run: pnpm dlx @lhci/cli@latest autorun --config=./lighthouserc.json
