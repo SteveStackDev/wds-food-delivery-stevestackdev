@@ -1,0 +1,18 @@
+# Chạy toàn bộ dự án bằng Docker:
+#   docker compose up -d --build     # build image và chạy nền
+#   docker compose logs -f web       # xem log
+#   docker compose down              # dừng và xóa container
+#
+# Hiện tại chỉ có service "web" (Frontend). Buổi 4 sẽ thêm service "api" (apps/api)
+# và database vào file này.
+services:
+  web:
+    build:
+      context: ./apps/web
+      dockerfile: Dockerfile
+    container_name: food-delivery-web
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: production
+    restart: unless-stopped
